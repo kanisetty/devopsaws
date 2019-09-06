@@ -1,0 +1,4 @@
+# yum install nrpe nagios-plugins-all -y
+-enable port number 5666
+-ensure port is open from security group
+-ensure ICMP is open from security group

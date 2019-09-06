@@ -1,0 +1,25 @@
+OS:Amazon Linux
+
+-nagios server configuration files
+#/etc/nagios
+
+-mail server setup configuration
+
+#/etc/nagios/private/resource.cfg
+
+-To update mail-id to receive notifications
+#/etc/nagios/objects/contacts.cfg
+
+Windows Macchine ip should be added here
+#/etc/nagios/objects/windows.cfg
+
+-for windows machine port 12489 should be added to security group (refer /etc/nagios/objects/commands.cfg of check_nt)
+ 
+-uncomment of  "windows.cfg" line no 34 in /etc/nagios.cfg
+
+
+-To add Linux host to Nagios Server 
+ -create linux.cfg file in /etc/nagios/objects and Add below line to /etc/nagios.cfg
+  cfg_file=/etc/nagios/objects/linux.cfg
+ -Restart service on Nagios Server
+
