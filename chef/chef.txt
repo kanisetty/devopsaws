@@ -1,0 +1,112 @@
+#+++++++++++++++++++++++++++++++++++Chef Defination+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Chef is a configuration management technology developed by Opscode to manage infrastructure on physical or virtual machines. It is an open source developed using Ruby, which helps in managing complex infrastructure on the fly.
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+C:/Users/krao/.chef
+
+CHEF SERVER[Cloud Service]
+---------------------
+
+https://manage.chef.io/organizations 
+
+How to Create Organizations
+Click On Administration tab->Click On "Create" which appears lefthand side under organizatins
+
+
+
+
+WORKSTATION[Windows]
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+c:/> chef --version
+c:/> knife --version
+
+
+
+###setup needs on workstation to push cookbooks into server
+
+step1)  login to chef cloud server(https://manage.chef.io)
+click on Administration->select organization->select "Starter Kit"-> Double click on "Download Starter Kit"
+This would copy  "chef-starter.zip" folder,Extract and put in c:/>
+Now try to push your cookbooks prepared in workstation 
+
+###creating  cookbooks in workstation
+
+c:/>mkdir chef-repo
+
+method1:
+
+  syntx :       knife cookbook create name_of_cookbook
+                    c:\chef-repo>knife cookbook create installation
+
+method 2:
+
+syntx : chef generate cookbook name_of_cookbook
+                 :\chef-repo>chef generate cookbook Tomcat_Install
+
+
+
+#### knife initial configuration  at work station  
+c:/>knife configure initial
+
+
+###Modifying recipes under cookbooks
+once you made necessary changes in recipes ex:default.rb, change the version number at metadata.rb file ex: change version from 1.0.0 to 1.0.1 
+and upload cookbook into repository and run 'chef-client' command on chef node 
+
+
+
+Bootstraping the Linux node
+---------------------------------- 
+
+Note:Bootstrap should be done from chef workstation i.e from windows 
+Note: ensure you have ACL for each organization over chef server 
+
+C:\chef-repo>knife bootstrap 10.96.85.152  --ssh-user  root --ssh-password  Opentext1!  --node-name  Cent
+
+
+Bootstraping the EC2 Linux node[RHEL Image]
+---------------------------------------- 
+knife bootstrap 13.126.27.150  --ssh-user ec2-user  --sudo --identity-file C:\Users\krao\Downloads\AL.pem   --node-name LINUX
+
+
+Bootstraping the windows EC2- node[Windows Server 2016 DataCenter]
+-------------------------------------- 
+Syntax:   knife bootstrap windows winrm ADDRESS --winrm-user USER --winrm-password 'PASSWORD' --node-name node1-windows
+
+C:\chef-repo>knife bootstrap windows winrm 13.127.47.220 --winrm-user Administrator --winrm-password 'abcABC123' --node-name windows2016
+
+Note:  1) By Default any windows machines does not allow to connect, so just login to the windows machine  which you want make as chef node and run below command through power shell
+PS C:\Users\Administrators>netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
+2) And also add  5985 port no  in security groups from AWS management console 
+3)Bootstraping installs chef client on the windows machine, Now add chef executable directory (C:\opscode\chef\bin)  to the class path of windows chef node
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+To upload cookbook to server
+
+C:\chef-repo>knife cookbook upload ohai
+
+C:\chef-repo> knife upload cookbooks
+
+To list cookbooks
+
+C:\chef-repo>knife cookbook list
+
+
+To delete a cook book which we uploaded to server
+
+C:\chef-repo>knife cookbook delete heartbeat
+
+
+To set run_list
+C:\chef-repo>knife node run_list add name_of_node name_of_cookbook
+
+CHEF NODE[Linux]
+---------------------------------------------------------------------------------------------------------
+[root@vme04259-01 ~]# chef-client
+
+
+ [root@vme04259-01 ~]#chef-client -o 'recipe[starter]'
+
+chef-client -o 'recipe[virtualbox]'
